@@ -23,7 +23,7 @@ function App() {
                         </NeedAuth>
                     }/>
                     <Route path='/login' element={<Login/>}/>
-                    <Route path='/userList' element={
+                    <Route path='/user-list' element={
                         <NeedAuth>
                             <UserList/>
                         </NeedAuth>
