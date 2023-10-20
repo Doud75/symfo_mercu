@@ -17,23 +17,26 @@ class JWTHelper
 
     public function createJWT(User $user): string
     {
-        $payload = ["mercure" => [
-            "subscribe" => ["https://example.com/user/{$user->getId()}/{?topic}"],
-            "payload" => [
-                "username" => $user->getUsername(),
-                "userid" => $user->getId()
-            ]
-        ]];
+        $payload = [
+            "mercure" => [
+                "subscribe" => ["https://example.com/user/{$user->getId()}/{?topic}"],
+                "payload" => [
+                    "username" => $user->getUsername(),
+                    "userid" => $user->getId(),
+                ]
+            ],
+            "exp" => (new \DateTime("+ 20 minutes"))->getTimestamp()
+        ];
 
         return JWT::encode($payload, $this->mercureSecret, 'HS256');
     }
 
-    public function isJwtValid(string $jwt): bool
+    public function isJwtValid(string $jwt): ?object
     {
         try {
-            return (bool)JWT::decode($jwt, new Key($this->mercureSecret, 'HS256'));
+            return JWT::decode($jwt, new Key($this->mercureSecret, 'HS256'));
         } catch (\Exception $e) {
-            return false;
+            return null;
         }
     }
 }

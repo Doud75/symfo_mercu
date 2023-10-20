@@ -83,11 +83,15 @@ class ConvController extends AbstractController
         $convUser = (new ConvUser())->setUserId($user)->setConvId($conv);
         $convUserRepository->save($convUser, true);
 
-        $secondUserName = $_POST['convUserName'];
-        $secondUser = $userRepository->findBy(['username' => $secondUserName])[0];
+        $listUserInfo = json_decode($_POST['convUserName'], true);
 
-        $secondConvUser = (new ConvUser())->setUserId($secondUser)->setConvId($conv);
-        $convUserRepository->save($secondConvUser, true);
+        foreach ($listUserInfo as $userInfo) {
+            $secondUserName = $userInfo['value'];
+            $secondUser = $userRepository->findBy(['username' => $secondUserName])[0];
+            $secondConvUser = (new ConvUser())->setUserId($secondUser)->setConvId($conv);
+            $convUserRepository->save($secondConvUser, true);
+        }
+
 
         return $this->json([
             "conv" => $conv

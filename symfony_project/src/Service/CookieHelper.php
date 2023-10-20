@@ -25,7 +25,7 @@ class CookieHelper
         return Cookie::create(
             'mercureAuthorization',
             $jwt,
-            new \DateTime("10 minutes"),
+            new \DateTime("20 minutes"),
             '/.well-known/mercure',
             'localhost',
             true,

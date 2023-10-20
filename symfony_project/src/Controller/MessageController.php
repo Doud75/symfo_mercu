@@ -56,15 +56,18 @@ class MessageController extends AbstractController
         $userList = $convUserRepository->findBy(['conv_id' => $conv]);
 
         try {
+            $arrayMessage['content'] = $message->getContent();
+            $arrayMessage['author'] = $message->getAuthor();
             foreach ($userList as $eachUser) {
                 $update = new Update(
                     [
                         "https://example.com/my-private-topic",
-                        "https://example.com/user/{$eachUser->getId()}/?topic=" . urlencode("https://example.com/my-private-topic")
+                        "https://example.com/user/{$eachUser->getUserId()->getId()}/?topic=" . urlencode("https://example.com/my-private-topic")
                     ],
                     json_encode([
                         'user' => $user->getUsername(),
-                        'id' => $user->getId()
+                        'id' => $user->getId(),
+                        'message' => $arrayMessage
                     ]),
                     true
                 );
@@ -73,7 +76,7 @@ class MessageController extends AbstractController
             }
 
             return $this->json([
-                "message" => $message
+                "user-list" => $userList
             ]);
         } catch (\Exception $e) {
             return $this->json([
@@ -92,7 +95,7 @@ class MessageController extends AbstractController
         int $convId,
     )
     {
-        /*$authorisationHeader = getallheaders()['Authorization'] ?? getallheaders()['authorization'];
+        $authorisationHeader = getallheaders()['Authorization'] ?? getallheaders()['authorization'];
         $cred = str_replace("Bearer ", "", $authorisationHeader);
         $token = $jwt->isJwtValid($cred);
         if (!$token) {
@@ -103,10 +106,10 @@ class MessageController extends AbstractController
 
         $token = JWT::decode($cred, new Key($mercureSecret, 'HS256'));
         $userName = $token->mercure->payload->username;
-        $user = $userRepository->findBy(['username' => $userName])[0];*/
+        $user = $userRepository->findBy(['username' => $userName])[0];
         $conv = $convRepository->find($convId);
 
-        $message = $messageRepository->findBy(['conv_id' => $conv],['updated_at' => 'DESC']);
+        $message = $messageRepository->findBy(['conv_id' => $conv],['updated_at' => 'ASC']);
 
         return $this->json([
             "message" => $message
